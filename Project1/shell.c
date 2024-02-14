@@ -3,15 +3,20 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
-
+#define EXIT_SUCCESS 0
 
 int shell_change_dir(char *dir_path) {
   // use the chdir() system call to change the current directory
+  chdir(dir_path);
 }
 
 
 int shell_file_exists(char *file_path) {
   // use the stat() system call to check if a file exists
+  // stat takes a char* for the file path and a char pointer for the output buffer
+  // we don't need to check the output buffer, so pointing it to null *SHOULD* work
+  // if stat finds the file, it should return EXIT_SUCCESS (0)
+  return (stat(file_path, NULL) == EXIT_SUCCESS);
 }
 
 
