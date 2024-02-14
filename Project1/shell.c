@@ -16,6 +16,7 @@ int shell_file_exists(char *file_path) {
   // stat takes a char* for the file path and a char pointer for the output buffer
   // we don't need to check the output buffer, so pointing it to null *SHOULD* work
   // if stat finds the file, it should return EXIT_SUCCESS (0)
+  // ignore the compiler warning
   return (stat(file_path, NULL) == EXIT_SUCCESS);
 }
 
@@ -32,6 +33,11 @@ int shell_execute(char *file_path, char **argv) {
 
 
 int main (int argc, char *argv[]) {
+	// get user info
+	char *username = getenv("USER");
+	char *hostname = getenv("HOSTNAME");
+
+	printf("Username: %s\nHostname: %s\n", username, hostname);
    //run the shell
    
    /*
