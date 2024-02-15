@@ -37,12 +37,27 @@ int main (int argc, char *argv[]) {
 	char *username = getenv("USER");
 	char *hostname = getenv("HOSTNAME");
 
+  // for testing purposes
 	printf("Username: %s\nHostname: %s\n", username, hostname);
-   //run the shell
-   
-   /*
-   while (!exit)
-   {
+
+  int exit;
+  
+  //run the shell
+  while (!exit) {
+    char input[50];
+    printf("username@hostname:path/path$ ");
+    fgets(input, 50, stdin);
+
+    if (strstr(input, "exit") != NULL) { // checks if strings are equal
+      exit = 0; 
+      break; 
+    } else {
+      printf("%s", input);
+    }
+  }
+
+
+  /*
 	1. display prompt and wait for user input
 		// generate some prompt 
 		// e.g. username@hostname:~/david$ ping 
@@ -59,6 +74,5 @@ int main (int argc, char *argv[]) {
 			execute the command using shell_execute()
 		else
 			report an error message
-    }
-   */
+  */
 }
