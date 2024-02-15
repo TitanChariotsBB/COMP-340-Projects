@@ -7,7 +7,8 @@
 
 int shell_change_dir(char *dir_path) {
   // use the chdir() system call to change the current directory
-  chdir(dir_path);
+  // returns 0 on success and -1 if error occurs
+  return chdir(dir_path);
 }
 
 
@@ -75,8 +76,17 @@ int main (int argc, char *argv[]) {
       exit = 0; 
       break; 
     } else if (!strcmp(tokens[0], "cd")) {
-      printf("cd command\n");
-      // shell_change_dir(dir);
+      // ------------------- CD COMMAND -------------------------
+      if (tokens[1] != NULL) {
+        char *path = tokens[1];
+        if (shell_change_dir(path) < 0) {
+          printf("Error: path not found\n");
+        }
+      } else {
+        // throw error
+        printf("Error: path not specified\n");
+      }
+      // --------------------------------------------------------
     } else {
       printf("\"%s\" command\n", tokens[0]);
     }
