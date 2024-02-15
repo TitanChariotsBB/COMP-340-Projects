@@ -37,7 +37,7 @@ int main (int argc, char *argv[]) {
 	char *username = getenv("USER");
 	char *hostname = getenv("HOSTNAME");
   char wd[100];
-  getcwd(wd, sizeof(wd)); // TODO: replace /home/$USERNAME with ~
+  getcwd(wd, sizeof(wd)); // TODO: replace /home/$USERNAME with "~"
 
   // for testing purposes
 	printf("Username: %s\nHostname: %s\nCurrent Working Directory: %s\n", username, hostname, wd);
@@ -48,19 +48,37 @@ int main (int argc, char *argv[]) {
   while (!exit) {
     char input[50];
     printf("%s@hostname:%s$ ", username, wd);
-    fgets(input, 50, stdin);
+    fgets(input, sizeof(input), stdin);
+    const char *delim = " \n";
+    char *token;
+    char *tokens[10]; // array of token strings
+    int idx = 0;
 
-    // TODO: use strtok() to split string into commands and arguments
-    //
-    //
+    token = strtok(input, delim);
+    tokens[idx] = token;
 
-    if (strstr(input, "exit") != NULL) { // checks if strings are equal
+    while (token != NULL) {
+      idx++;
+      token = strtok(NULL, delim);
+      tokens[idx] = token;
+    }
+    
+    // for testing
+    // int i = 0;
+    // while(tokens[i] != NULL) {
+    //   printf("%s\n", tokens[i]);
+    //   i++;
+    // }
+
+
+    if (!strcmp(tokens[0], "exit") && tokens[1] == NULL) { // checks if strings are equal
       exit = 0; 
       break; 
-    } else if (strstr(input, "cd")) {
+    } else if (!strcmp(tokens[0], "cd")) {
+      printf("cd command\n");
       // shell_change_dir(dir);
     } else {
-      printf("%s", input);
+      printf("\"%s\" command\n", tokens[0]);
     }
   }
 
