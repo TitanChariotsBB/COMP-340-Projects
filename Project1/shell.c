@@ -36,16 +36,18 @@ int main (int argc, char *argv[]) {
 	// get user info
 	char *username = getenv("USER");
 	char *hostname = getenv("HOSTNAME");
+  char wd[100];
+  getcwd(wd, sizeof(wd)); // TODO: replace /home/$USERNAME with ~
 
   // for testing purposes
-	printf("Username: %s\nHostname: %s\n", username, hostname);
+	printf("Username: %s\nHostname: %s\nCurrent Working Directory: %s\n", username, hostname, wd);
 
-  int exit;
+  int exit = 0;
   
   //run the shell
   while (!exit) {
     char input[50];
-    printf("username@hostname:path/path$ ");
+    printf("%s@hostname:%s$ ", username, wd);
     fgets(input, 50, stdin);
 
     // TODO: use strtok() to split string into commands and arguments
