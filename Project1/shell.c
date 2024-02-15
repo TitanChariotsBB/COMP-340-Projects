@@ -28,14 +28,15 @@ int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   // traverse the PATH environment variable to find the absolute path of a file/command
   const char* path = getenv("PATH");
   char *sep = (char*) malloc(file_path_size * sizeof(char));
-  sep = strdup(file_path);
-  if (sep) {
-    file_path = strdup(sep);
-    free(sep);
-    return 0;      
-  } else {       
+  sep = strsep(*path, file_name);
+  if(sep == NULL){
     free(sep);
     return -1;
+  }
+  else{
+    file_path = strdup(sep);
+    free(sep);
+    return 0;
   }
 }
 
@@ -119,7 +120,9 @@ int main (int argc, char *argv[]) {
         if (shell_execute(tokens[0], tokens) < 0) {
           printf("Error: could not execute file\n");
         }
-      } else { // $PATH or ./
+      } else if (0) { // test to find on the path
+
+      } else {
         printf("Error: could not find executable: %s\n", strerror(errno));
       }
     }
