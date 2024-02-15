@@ -48,9 +48,15 @@ int main (int argc, char *argv[]) {
     printf("username@hostname:path/path$ ");
     fgets(input, 50, stdin);
 
+    // TODO: use strtok() to split string into commands and arguments
+    //
+    //
+
     if (strstr(input, "exit") != NULL) { // checks if strings are equal
       exit = 0; 
       break; 
+    } else if (strstr(input, "cd")) {
+      // shell_change_dir(dir);
     } else {
       printf("%s", input);
     }
