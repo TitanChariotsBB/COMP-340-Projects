@@ -23,9 +23,20 @@ int shell_file_exists(char *file_path) {
   return (stat(file_path, buffer) == EXIT_SUCCESS);
 }
 
-
+// TODO: test this function
 int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   // traverse the PATH environment variable to find the absolute path of a file/command
+  const char* path = getenv("PATH");
+  char *sep = (char*) malloc(file_path_size * sizeof(char));
+  sep = strdup(file_path);
+  if (sep) {
+    file_path = strdup(sep);
+    free(sep);
+    return 0;      
+  } else {       
+    free(sep);
+    return -1;
+  }
 }
 
 
