@@ -80,7 +80,7 @@ int main (int argc, char *argv[]) {
     printf("%s@hostname:%s$ ", username, wd);
     fgets(input, sizeof(input), stdin);
 
-    // tokenize user input
+    // split user input into tokens
     const char *delim = " \n";
     char *token;
     char *tokens[10]; // array of token strings
@@ -98,11 +98,11 @@ int main (int argc, char *argv[]) {
     //   printf("%s\n", tokens[i]);
     //   i++;
     // }
-
-    if (!strcmp(tokens[0], "exit") && tokens[1] == NULL) { // checks if strings are equal
+    char *command = tokens[0];
+    if (!strcmp(command, "exit") && tokens[1] == NULL) { // checks if strings are equal
       exit = 0; 
       break; 
-    } else if (!strcmp(tokens[0], "cd")) {
+    } else if (!strcmp(command, "cd")) {
       // ------------------- CD COMMAND -------------------------
       if (tokens[1] != NULL) {
         char *path = tokens[1];
@@ -116,12 +116,16 @@ int main (int argc, char *argv[]) {
       // --------------------------------------------------------
     } else {
       // absolute file path
-      if (shell_file_exists(tokens[0])) {
-        if (shell_execute(tokens[0], tokens) < 0) {
+      if (shell_file_exists(command)) {
+        if (shell_execute(command, tokens) < 0) {
           printf("Error: could not execute file\n");
         }
-      } else if (0) { // test to find on the path
-
+      } else if (strstr(command, "./") == command) { // starts with ./
+        char *toRemove = "./";
+        char *new_cmd = strtok(command, delim);
+        if (shell_execute(new_cmd, tokens) < 0) {
+          printf("Error: could not execute file\n");
+        }
       } else {
         printf("Error: could not find executable: %s\n", strerror(errno));
       }
