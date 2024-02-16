@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
   char wd[100];
 
   // for testing purposes
-	printf("Username: %s\nHostname: %s\nCurrent Working Directory: %s\n", username, hostname, wd);
+	printf("Username: %s\nHostname: %s\n", username, hostname);
 
   int exit = 0;
   
@@ -92,16 +92,11 @@ int main (int argc, char *argv[]) {
       token = strtok(NULL, delim);
       tokens[idx] = token;
     }
-    // for testing
-    // int i = 0;
-    // while(tokens[i] != NULL) {
-    //   printf("%s\n", tokens[i]);
-    //   i++;
-    // }
+
+    // parse command
     char *command = tokens[0];
     if (!strcmp(command, "exit") && tokens[1] == NULL) { // checks if strings are equal
-      exit = 0; 
-      break; 
+      exit = 0;
     } else if (!strcmp(command, "cd")) {
       // ------------------- CD COMMAND -------------------------
       if (tokens[1] != NULL) {
@@ -120,35 +115,20 @@ int main (int argc, char *argv[]) {
         if (shell_execute(command, tokens) < 0) {
           printf("Error: could not execute file\n");
         }
-      } else if (strstr(command, "./") == command) { // starts with ./
+
+      // starts with ./
+      } else if (strstr(command, "./") == command) { 
         char *toRemove = "./";
         char *new_cmd = strtok(command, delim);
         if (shell_execute(new_cmd, tokens) < 0) {
           printf("Error: could not execute file\n");
         }
+      
+      // look for executable in PATH directories
       } else {
+        // TODO: call shell_find_file() correctly
         printf("Error: could not find executable: %s\n", strerror(errno));
       }
     }
   }
-
-
-  /*
-	1. display prompt and wait for user input
-		// generate some prompt 
-		// e.g. username@hostname:~/david$ ping 
-	
-	2. filter out whitespace command 
-	
-	3. if command line contains non-whitespace characters
-	
-	4. parse command line
-		if the specified command is “exit”, terminate the program taking care to release any allocated resources.
-		if the specified command is “cd”
-			change the current working directory to the specified directory path using shell_change_dir()
-		if the command is specified using an absolute path (e.g. /usr/bin/ls), exists in the user’s PATH (e.g. ls) or exists in the current folder (e.g. ./hello_world)
-			execute the command using shell_execute()
-		else
-			report an error message
-  */
 }
