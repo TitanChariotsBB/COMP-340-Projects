@@ -78,6 +78,7 @@ int main (int argc, char *argv[]) {
     // get user input
     char input[50];
     printf("%s@hostname:%s$ ", username, wd);
+    fflush(stdin); // flush input buffer
     fgets(input, sizeof(input), stdin);
 
     // split user input into tokens
@@ -96,7 +97,7 @@ int main (int argc, char *argv[]) {
     // parse command
     char *command = tokens[0];
     if (!strcmp(command, "exit") && tokens[1] == NULL) { // checks if strings are equal
-      exit = 0;
+      exit = 1;
     } else if (!strcmp(command, "cd")) {
       // ------------------- CD COMMAND -------------------------
       if (tokens[1] != NULL) {
