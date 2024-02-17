@@ -23,23 +23,73 @@ int shell_file_exists(char *file_path) {
   return (stat(file_path, buffer) == EXIT_SUCCESS);
 }
 
+char* concat(const char *s1, const char *s2)
+{
+    char *result = malloc(strlen(s1) + strlen(s2) + 1);
+    strcpy(result, s1);
+    strcat(result, s2);
+    return result;
+}
+
+void test_concat() {
+  char *str;
+  char *str1 = "hello ";
+  char *str2 = "world";
+  str = concat(str1, str2);
+  printf("%s\n", str);
+  free(str);
+}
+
+void test_string_stuff(char *input, char *output) {
+  char *s;
+  s = concat(input, " ahjahaha");
+  strcpy(output, s);
+}
+
 // TODO: test this function
 int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   // traverse the PATH environment variable to find the absolute path of a file/command
-  const char* path = getenv("PATH");
-  char *sep = (char*) malloc(file_path_size * sizeof(char));
-  sep = strsep(*path, file_name);
-  if(sep == NULL){
-    free(sep);
-    return -1;
-  }
-  else{
-    file_path = strdup(sep);
-    free(sep);
-    return 0;
-  }
-}
 
+  // BEN'S SOLUTION
+  // const char* path = getenv("PATH");
+  // char *sep = (char*) malloc(file_path_size * sizeof(char));
+  // sep = strsep(*path, file_name);
+  // if(sep == NULL){
+  //   free(sep);
+  //   return -1;
+  // }
+  // else{
+  //   file_path = strdup(sep);
+  //   free(sep);
+  //   return 0;
+  // }
+
+  char *paths = getenv("PATH");
+  const char *delim = ":";
+  char* patharray[40];
+  char *path;
+  int idx = 0;
+  path = strtok(paths, delim);
+  patharray[idx] = path;
+  while (path != NULL) {
+    idx++;
+    path = strtok(NULL, delim);
+    patharray[idx] = path;
+  }
+
+  idx = 0;
+  while (patharray[idx] != NULL) {
+    char *s = concat(patharray[idx], file_name);
+    if (shell_file_exists(s) == 0) {
+      printf("Found the path! %s\n", s);
+      free(s);
+      return EXIT_SUCCESS;
+    }
+    free(s);
+  }
+  printf("Error: executable not found on PATH\n");
+  return -1;
+}
 
 int shell_execute(char *file_path, char **argv) {
   // execute the file with the command line arguments
@@ -60,6 +110,14 @@ int shell_execute(char *file_path, char **argv) {
 
 
 int main (int argc, char *argv[]) {
+  // test_concat();
+
+  // char *s1 = "prefix";
+  // char out[100];
+  // test_string_stuff(s1, out);
+  // printf("%s\n", out);
+  // return 0;
+
 	// get user info
 	char *username = getenv("USER");
 	char *hostname = getenv("HOSTNAME");
@@ -127,8 +185,13 @@ int main (int argc, char *argv[]) {
       
       // look for executable in PATH directories
       } else {
-        // TODO: call shell_find_file() correctly
-        printf("Error: could not find executable: %s\n", strerror(errno));
+        // TODO: test this
+        char filepath[100];
+        if (shell_find_file(command, filepath, 100) < 0) {
+          // if (shell_execute(filepath, tokens) < 0) {
+          //   printf("Error: could not execute file\n");
+          // }
+        } 
       }
     }
   }
