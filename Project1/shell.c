@@ -44,6 +44,7 @@ int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   while (path != NULL) {
     idx++;
     path = strtok(NULL, delim);
+    printf("Path %d: %s\n", idx, path);
     patharray[idx] = path;
   }
 
@@ -51,6 +52,7 @@ int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   idx = 0;
   while (patharray[idx] != NULL) {
     char *s = concat(patharray[idx], file_name);
+    printf("Searching for existence of: %s\n", s);
     if (shell_file_exists(s) == 1) {
       strcpy(file_path, s);
       free(s);
