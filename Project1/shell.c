@@ -25,48 +25,18 @@ int shell_file_exists(char *file_path) {
 
 char* concat(const char *s1, const char *s2)
 {
-    char *result = malloc(strlen(s1) + strlen(s2) + 1);
+    char *result = malloc(strlen(s1) + strlen(s2) + 2);
     strcpy(result, s1);
+    strcat(result, "/");
     strcat(result, s2);
     return result;
 }
 
-void test_concat() {
-  char *str;
-  char *str1 = "hello ";
-  char *str2 = "world";
-  str = concat(str1, str2);
-  printf("%s\n", str);
-  free(str);
-}
-
-void test_string_stuff(char *input, char *output) {
-  char *s;
-  s = concat(input, " ahjahaha");
-  strcpy(output, s);
-}
-
-// TODO: test this function
 int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   // traverse the PATH environment variable to find the absolute path of a file/command
-
-  // BEN'S SOLUTION
-  // const char* path = getenv("PATH");
-  // char *sep = (char*) malloc(file_path_size * sizeof(char));
-  // sep = strsep(*path, file_name);
-  // if(sep == NULL){
-  //   free(sep);
-  //   return -1;
-  // }
-  // else{
-  //   file_path = strdup(sep);
-  //   free(sep);
-  //   return 0;
-  // }
-
   char *paths = getenv("PATH");
   const char *delim = ":";
-  char* patharray[40];
+  char* patharray[100];
   char *path;
   int idx = 0;
   path = strtok(paths, delim);
@@ -77,15 +47,17 @@ int shell_find_file(char *file_name, char *file_path, char file_path_size) {
     patharray[idx] = path;
   }
 
+  // test possible absolute paths
   idx = 0;
   while (patharray[idx] != NULL) {
     char *s = concat(patharray[idx], file_name);
-    if (shell_file_exists(s) == 0) {
-      printf("Found the path! %s\n", s);
+    if (shell_file_exists(s) == 1) {
+      strcpy(file_path, s);
       free(s);
       return EXIT_SUCCESS;
     }
     free(s);
+    idx++;
   }
   printf("Error: executable not found on PATH\n");
   return -1;
@@ -96,7 +68,7 @@ int shell_execute(char *file_path, char **argv) {
   // use the fork() and exec() system call 
   pid_t pid = fork();
   if (pid < 0) {
-    printf("Fork failed!\n");
+    printf("Error: fork failed!\n");
     return -1;
   } else if (pid == 0) {
     execv(file_path, argv);
@@ -110,32 +82,20 @@ int shell_execute(char *file_path, char **argv) {
 
 
 int main (int argc, char *argv[]) {
-  // test_concat();
-
-  // char *s1 = "prefix";
-  // char out[100];
-  // test_string_stuff(s1, out);
-  // printf("%s\n", out);
-  // return 0;
-
-	// get user info
+  // get user info
 	char *username = getenv("USER");
-	char *hostname = getenv("HOSTNAME");
   char wd[100];
-
-  // for testing purposes
-	printf("Username: %s\nHostname: %s\n", username, hostname);
 
   int exit = 0;
   
   //run the shell
   while (!exit) {
     // find current directory
-    getcwd(wd, sizeof(wd)); // TODO: replace /home/$USERNAME with "~"
+    getcwd(wd, sizeof(wd));
 
     // get user input
     char input[50];
-    printf("%s@hostname:%s$ ", username, wd);
+    printf("%s:%s$ ", username, wd);
     fflush(stdin); // flush input buffer
     fgets(input, sizeof(input), stdin);
 
@@ -152,8 +112,18 @@ int main (int argc, char *argv[]) {
       tokens[idx] = token;
     }
 
-    // parse command
     char *command = tokens[0];
+    // get rid of spaces
+    int i = 0;
+    while (command[i] != '\0') {
+      if (command[i] == ' ') {
+        command[i] = '\0';
+      }
+      i++;
+    }
+    printf("Command: %s\n", command);
+
+    // parse command
     if (!strcmp(command, "exit") && tokens[1] == NULL) { // checks if strings are equal
       exit = 1;
     } else if (!strcmp(command, "cd")) {
@@ -187,11 +157,11 @@ int main (int argc, char *argv[]) {
       } else {
         // TODO: test this
         char filepath[100];
-        if (shell_find_file(command, filepath, 100) < 0) {
-          // if (shell_execute(filepath, tokens) < 0) {
-          //   printf("Error: could not execute file\n");
-          // }
-        } 
+        if (shell_find_file(command, filepath, 100) == 0) {
+          if (shell_execute(filepath, tokens) < 0) {
+            printf("Error: could not execute file\n");
+          }
+        }
       }
     }
   }
