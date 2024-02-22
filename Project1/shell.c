@@ -4,8 +4,11 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
 #define EXIT_SUCCESS 0
+
+char* patharray[100];
 
 int shell_change_dir(char *dir_path) {
   // use the chdir() system call to change the current directory
@@ -32,11 +35,10 @@ char* concat(const char *s1, const char *s2)
     return result;
 }
 
-int shell_find_file(char *file_name, char *file_path, char file_path_size) {
+int populate_path_array() {
   // traverse the PATH environment variable to find the absolute path of a file/command
   char *paths = getenv("PATH");
   const char *delim = ":";
-  char* patharray[100];
   char *path;
   int idx = 0;
   path = strtok(paths, delim);
@@ -44,15 +46,18 @@ int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   while (path != NULL) {
     idx++;
     path = strtok(NULL, delim);
-    printf("Path %d: %s\n", idx, path);
+    //printf("Path %d: %s\n", idx, path);
     patharray[idx] = path;
   }
+  return 0;
+}
 
+int shell_find_file(char *file_name, char *file_path, char file_path_size) {
   // test possible absolute paths
-  idx = 0;
+  int idx = 0;
   while (patharray[idx] != NULL) {
     char *s = concat(patharray[idx], file_name);
-    printf("Searching for existence of: %s\n", s);
+    //printf("Searching for existence of: %s\n", s);
     if (shell_file_exists(s) == 1) {
       strcpy(file_path, s);
       free(s);
@@ -84,6 +89,8 @@ int shell_execute(char *file_path, char **argv) {
 
 
 int main (int argc, char *argv[]) {
+  populate_path_array();
+
   // get user info
 	char *username = getenv("USER");
   char wd[100];
@@ -123,7 +130,7 @@ int main (int argc, char *argv[]) {
       }
       i++;
     }
-    printf("Command: %s\n", command);
+    //printf("Command: %s\n", command);
 
     // parse command
     if (!strcmp(command, "exit") && tokens[1] == NULL) { // checks if strings are equal
