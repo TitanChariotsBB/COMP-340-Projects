@@ -1,3 +1,14 @@
+/*
+  Authors:  Christian Abbott, Ben Raduns
+  Course:  COMP 340, Operating Systems
+  Date:    23 February 2024
+  Description:   This file implements the
+                 Shell program
+  Compile with:  gcc -o shell shell.c
+  Run with:      ./shell
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
